@@ -31,8 +31,8 @@ def menu(user)
           tr = Transaction.create(user_id: user.id, account_id:  user.account.id, amount: amount, status: "pending")
           tr.withdraw
         when 3 # Check Balance
+          user.account.reload
           balance = user.account.balance
-          # Update
           puts "Your current balance is $#{balance}"
         else
           puts "Incorrect input! Please try again."

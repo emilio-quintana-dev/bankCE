@@ -1,23 +1,22 @@
 class Transaction < ActiveRecord::Base
   belongs_to :user
+  belongs_to :account
   
   def deposit
     puts "Depositing..."
-    user = User.find(self.user_id)
-    new_balance = user.account.balance + self.amount
-    user.account.update(:balance => new_balance)
+    new_balance = account.balance + self.amount
+    account.update(:balance => new_balance)
     puts "The new balance is #{user.account.balance}"
   end
 
   def withdraw
     puts "Withdrawing..."
-    user = User.find(self.user_id)
-    new_balance = user.account.balance - self.amount
+    new_balance = account.balance - self.amount
 
     if new_balance < 0
       puts "Error! Amount can't be greater than balance."
     else
-      user.account.update(:balance => new_balance)
+      account.update(:balance => new_balance)
       puts "The new balance is #{user.account.balance}"
     end
   end
