@@ -23,7 +23,7 @@ def menu(user)
             print ">>> "
             amount = gets.chomp.to_f 
               puts "Creating Transaction..."
-              tr = Transaction.create(user_id: user.id, account_id:  user.account.id, amount: amount)
+              tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
               tr.deposit
           else
           puts "If you will like to deposit into another account, please enter account ID."
@@ -39,7 +39,7 @@ def menu(user)
               puts "Insufficient funds!"
             else 
             puts "Creating Transaction..."
-            tr = Transaction.create(user_id: receiver.id, account_id:  receiver.account.id, amount: amount)
+            tr = Transfer.create(user_id: receiver.id, account_id:  receiver.account.id, amount: amount)
             tr.deposit
             end
         end
@@ -49,13 +49,26 @@ def menu(user)
           amount = gets.chomp.to_f
   
           puts "Creating Transaction..."
-          tr = Transaction.create(user_id: user.id, account_id:  user.account.id, amount: amount)
+          tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
           tr.withdraw
-        when 3 #Cancel Transaction
-          user.transaction.map do |transaction|
-            puts "#{transaction}"
+        when 3 # Cancel Transaction
+          puts "Displaying Transactions..."
+          user.transfers.map do |transaction|
+            account = Account.find(transaction.account_id)
+            user = User.find(account.user_id)
+            puts "Name: #{user.name}"
+            puts "Transaction ID: #{transaction.id}"
+            puts "Amount: #{transaction.amount}"
           end
 
+          puts "Please enter the ID of the transaction you would like to cancel:"
+          transaction_id = gets.chomp.to_i
+
+          transfer = Transfer.find(transaction_id)
+          puts "Reversing Transaction...."
+          transfer.reverse_transfer
+        
+          puts "Transaction Deleted and Reversed Successfully."
         when 4 # Check Balance
           user.account.reload
           balance = user.account.balance

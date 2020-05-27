@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 3) do
     t.integer "user_id"
   end
 
-  create_table "transactions", force: :cascade do |t|
+  create_table "transfers", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "account_id"
     t.float    "amount"
