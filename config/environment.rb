@@ -1,4 +1,6 @@
 require 'bundler'
+require 'tty-prompt'
+require 'tty-table'
 Bundler.require
 ActiveRecord::Base.logger = nil
 
