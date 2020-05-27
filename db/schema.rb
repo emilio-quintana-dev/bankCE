@@ -21,7 +21,6 @@ ActiveRecord::Schema.define(version: 3) do
     t.integer  "user_id"
     t.integer  "account_id"
     t.float    "amount"
-    t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
