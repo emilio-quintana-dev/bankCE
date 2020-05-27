@@ -1,49 +1,50 @@
 require_relative '../config/environment'
 require 'tty-prompt'
+require 'tty-table'
 
+# $table = TTY::Table.new ['header1','header2'], [['a1', 'a2'], ['b1', 'b2']]
+$prompt = TTY::Prompt.new
 
 def menu(user)
-    puts "What would you like to do?"
-    puts "1. Deposit"
-    puts "2. Withdraw"
-    puts "3. Cancel Transaction"
-    puts "4. Get Balance"
-    puts "5. Quit"
-    print ">>> "
-    action = gets.chomp.to_i
+  puts `clear`
+  # $table.render(:basic)
+  choices = %w(Deposit Withdraw History Cancel Balance Quit)
+  action = $prompt.select("What would you like to do?", choices)
+    
   
-    while(action != 5) do
+    while(action != 6) do
   
       case action
-        when 1 # Deposit
-          puts "Would you like to deposit into your account? Yes or No?"
-          user_input = gets.chomp
-          if user_input == "yes, YES, y, Yes"
-              puts "How much would you like to deposit?"
-            print ">>> "
-            amount = gets.chomp.to_f 
-              puts "Creating Transaction..."
-              tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
-              tr.deposit
-          else
-          puts "If you will like to deposit into another account, please enter account ID."
-            Account.all.map do |account|
-          puts "#{account.user.name}  - #{account.id}"
-            end
-            account_id = gets.chomp.to_i
-            receiver = User.find(account_id)
-            puts "How much would you like to deposit?"
-            print ">>> "
-            amount = gets.chomp.to_f
-            if user.account.balance < amount 
-              puts "Insufficient funds!"
-            else 
-            puts "Creating Transaction..."
-            tr = Transfer.create(user_id: receiver.id, account_id:  receiver.account.id, amount: amount)
-            tr.deposit
-            end
-        end
-        when 2 # Withdraw
+        when "Deposit"
+          deposit(user)
+        #   puts "Would you like to deposit into your account? Yes or No?"
+        #   user_input = gets.chomp
+        #   if user_input == "yes, YES, y, Yes"
+        #       puts "How much would you like to deposit?"
+        #     print ">>> "
+        #     amount = gets.chomp.to_f 
+        #       puts "Creating Transaction..."
+        #       tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
+        #       tr.deposit
+        #   else
+        #   puts "If you will like to deposit into another account, please enter account ID."
+        #     Account.all.map do |account|
+        #   puts "#{account.user.name}  - #{account.id}"
+        #     end
+        #     account_id = gets.chomp.to_i
+        #     receiver = User.find(account_id)
+        #     puts "How much would you like to deposit?"
+        #     print ">>> "
+        #     amount = gets.chomp.to_f
+        #     if user.account.balance < amount 
+        #       puts "Insufficient funds!"
+        #     else 
+        #     puts "Creating Transaction..."
+        #     tr = Transfer.create(user_id: receiver.id, account_id:  receiver.account.id, amount: amount)
+        #     tr.deposit
+        #     end
+        # end
+        when "Withdraw"
           puts "How much would you like to withdraw?"
           print ">>> "
           amount = gets.chomp.to_f
@@ -51,7 +52,22 @@ def menu(user)
           puts "Creating Transaction..."
           tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
           tr.withdraw
-        when 3 # Cancel Transaction
+
+        when "History"
+          puts "Which transactions would you like to view? All or Self"
+          user_input = gets.chomp
+          if user_input == "All"
+            user.transfers.map do |transfer|
+              puts "Transaction ID #{transfer.id}"
+              puts "Transaction Amount #{transfer.amount}"
+            end
+          elsif user_input == "Self"
+            user.owned_transfers.map do |transfer|
+              puts "Transaction ID #{transfer.id}"
+              puts "Transaction Amount #{transfer.amount}"
+            end
+          end
+        when "Cancel"
           puts "Displaying Transactions..."
           user.transfers.map do |transaction|
             account = Account.find(transaction.account_id)
@@ -69,22 +85,15 @@ def menu(user)
           transfer.reverse_transfer
         
           puts "Transaction Deleted and Reversed Successfully."
-        when 4 # Check Balance
+        when "Balance"
           user.account.reload
           balance = user.account.balance
           puts "Your current balance is $#{balance}"
         else
           puts "Incorrect input! Please try again."
       end
-  
-      puts "What would you like to do?"
-      puts "1. Deposit"
-      puts "2. Withdraw"
-      puts "3. Cancel Transaction"
-      puts "4. Get Balance"
-      puts "5. Quit"
-      print ">>> "
-      action = gets.chomp.to_i
+      action = prompt.select("What would you like to do?", %w(Deposit Withdraw History Cancel Balance Quit))
+      
     end
 end
 
@@ -92,9 +101,11 @@ puts "Welcome to BankCE"
 puts "*" * 25
 
 # Gets user's username
-puts "Please enter your name:"
-print ">>> "
-name = gets.chomp
+# puts "Please enter your name:"
+# print ">>> "
+name = $prompt.ask("Please enter your name:")
+
+
  
 # If the user exists then launch the menu
 # based on that user's instance

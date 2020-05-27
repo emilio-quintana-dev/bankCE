@@ -7,3 +7,5 @@ gem "pry"
 gem "require_all"
 gem 'tty-table'
 gem 'tty-prompt'
+gem 'tty-box'
+gem 'tty-markdown'

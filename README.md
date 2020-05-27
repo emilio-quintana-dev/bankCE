@@ -79,3 +79,8 @@ User can check transactions based on day
 User can check transactions based on amount
 DELETE:
 User can cancel a transaction
+
+
+CLI - Menu - first input user writes a name
+Menu has selections for which option to choose
+Menu
