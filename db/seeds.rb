@@ -11,5 +11,8 @@ acct_1 = Account.create(balance: 0, user_id: joe.id)
 acct_2 = Account.create(balance: 0, user_id: apple.id)
 acct_3 = Account.create(balance: 0, user_id: gabe.id)
 
-trans_acc_1 = Transaction.create(user_id: joe.id, account_id: acct_1.id, amount: 100)
+trans_acc_1 = Transaction.create(user_id: joe.id, account_id: acct_1.id, amount: 1000)
+trans_acc_2 = Transaction.create(user_id: apple.id, account_id: acct_2.id, amount: 1000)
+
+
 

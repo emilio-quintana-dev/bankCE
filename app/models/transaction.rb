@@ -21,16 +21,5 @@ class Transaction < ActiveRecord::Base
     end
   end
 
-  def cancel_transaction
-    puts "Hello #{user.name}, are you sure you want to cancel the last transaction? Yes or No?"
-    user_input = gets.chomp
-    if user_input == "Yes"
-      puts "Canceling #{Transaction.last}"
-      binding.pry
-    end
-  
-    #deletes the last transaction performed by the user
-    #Transaction.last, last transaction made by user
-  end
 
 end

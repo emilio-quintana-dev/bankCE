@@ -6,19 +6,19 @@ def menu(user)
     puts "What would you like to do?"
     puts "1. Deposit"
     puts "2. Withdraw"
-    puts "3. Get Balance"
-    puts "4. Cancel Transaction"
+    puts "3. Cancel Transaction"
+    puts "4. Get Balance"
     puts "5. Quit"
     print ">>> "
     action = gets.chomp.to_i
   
-    while(action != 0) do
+    while(action != 5) do
   
       case action
         when 1 # Deposit
           puts "Would you like to deposit into your account? Yes or No?"
           user_input = gets.chomp
-          if user_input == "yes"
+          if user_input == "yes, YES, y, Yes"
               puts "How much would you like to deposit?"
             print ">>> "
             amount = gets.chomp.to_f 
@@ -43,26 +43,6 @@ def menu(user)
             tr.deposit
             end
         end
-    
-        #     puts "Creating Transaction..."
-        #     tr = Transaction.create(user_id: user.id, account_id:  user.account.id, amount: amount)
-        #     tr.deposit
-        #   else
-        #     puts "If you will like to deposit into another account, please enter account ID."
-        #     Account.all.map do |account|
-        #       puts "#{account.user.name}  - #{account.id}"
-        #   end
-        # end
-        #   account_id = gets.chomp.to_i
-        #   user = User.find(account_id)
-        #   puts "How much would you like to deposit?"
-        #   print ">>> "
-        #   amount = gets.chomp.to_f
-  
-        #   puts "Creating Transaction..."
-        #   tr = Transaction.create(user_id: user.id, account_id:  user.account.id, amount: amount)
-        #   tr.deposit
-          
         when 2 # Withdraw
           puts "How much would you like to withdraw?"
           print ">>> "
@@ -71,7 +51,12 @@ def menu(user)
           puts "Creating Transaction..."
           tr = Transaction.create(user_id: user.id, account_id:  user.account.id, amount: amount)
           tr.withdraw
-        when 3 # Check Balance
+        when 3 #Cancel Transaction
+          user.transaction.map do |transaction|
+            puts "#{transaction}"
+          end
+
+        when 4 # Check Balance
           user.account.reload
           balance = user.account.balance
           puts "Your current balance is $#{balance}"
@@ -82,8 +67,8 @@ def menu(user)
       puts "What would you like to do?"
       puts "1. Deposit"
       puts "2. Withdraw"
-      puts "3. Get Balance"
-      puts "4. Cancel Transaction"
+      puts "3. Cancel Transaction"
+      puts "4. Get Balance"
       puts "5. Quit"
       print ">>> "
       action = gets.chomp.to_i
