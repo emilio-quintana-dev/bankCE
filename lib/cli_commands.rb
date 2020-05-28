@@ -1,3 +1,4 @@
+
 def display_stats(user)
   user.account.reload
   puts "🧍‍♂️  #{user.name}  |  💰 $#{user.account.balance}  \n\n"
@@ -13,7 +14,7 @@ def menu(user)
   clear_and_reload(user)
   display_stats(user)
 
-  choices = %w(Deposit Withdraw Reverse\ Transaction Balance Quit) 
+  choices = %w(Deposit Withdraw Reverse\ Transaction History Balance Quit) 
   action = $prompt.select("What would you like to do?", choices)
     
     while(action != "Quit") do
@@ -44,6 +45,27 @@ def menu(user)
             clear_and_reload(user)
             display_stats(user)
           end
+        
+        when "History"
+          clear_and_reload(user)
+          display_stats(user)
+
+          choices = %w(All\ Transactions My\ Transactions)
+          user_input = $prompt.select("Which transactions would you like to view?", choices)
+
+          if user_input == "All Transactions"
+            user.transfers.map do |transfer|
+              puts "Transaction ID #{transfer.id} - Amount:  $ #{transfer.amount} - #{transfer.account.user.name}"
+            end
+
+          elsif user_input == "My Transactions"
+            user.transfers.select do |transfer|
+              if transfer.user_id == user.id && transfer.account_id != user.account.id
+                puts "Amount:  $ #{transfer.amount} Destination: #{transfer.account.user.name}"
+              end
+            end
+          end
+
 
         # REVERSE TRANSACTION
         # USER CAN SELECT A TRANSACTION HE
@@ -65,8 +87,7 @@ def menu(user)
                 # SAVE THE RECIEVER'S USER INSTANCE
                 reciever = User.find(reciever_account.user_id)
                 # PRINT OUT ALL TRANSACTIONS
-                "#{reciever.name} - $ #{transaction.amount}"
-                
+                "#{reciever.name} - $ #{transaction.amount} - ID #{transaction.id}"
               end
             end
 
@@ -96,7 +117,7 @@ def menu(user)
           puts "Incorrect input! Please try again."
       end
 
-      action = $prompt.select("What would you like to do?", %w(Deposit Withdraw Reverse\ Transaction Balance Quit)) # # History is temporarily removed
+      action = $prompt.select("What would you like to do?", %w(Deposit Withdraw Reverse\ Transaction  History Balance Quit)) # # History is temporarily removed
       
     end
 end
@@ -152,7 +173,7 @@ def deposit(user)
         clear_and_reload(user)
         display_stats(user)
         # WITHDRAW MONEY FROM THE SENDER'S BALANCE
-        tr2 = Transfer.create(user_id: receiver.id, account_id: user.account.id, amount: amount)
+        tr2 = Transfer.create(user_id: user.id, account_id: user.account.id, amount: amount)
         tr2.withdraw
         # CLEAR AND RELOAD
         clear_and_reload(user)

@@ -24,7 +24,7 @@ class Transfer < ActiveRecord::Base
   def reverse_transfer
 
     # GET THE RECIEVER'S ACCOUNT
-    reciever_account = Account.find(self.account_id)
+    reciever_account = self.account
 
     # GET THE SENDER'S ACCOUNT
     user_account = self.user.account
