@@ -33,13 +33,13 @@ def menu(user)
         when "History"
           puts `clear`
           display_stats(user)
-
+          user.account.reload
           choices = %w(All\ Transactions My\ Transactions)
           user_input = $prompt.select("Which transactions would you like to view?", choices)
 
           if user_input == "All Transactions"
             user.transfers.map do |transfer|
-              puts "Transaction ID #{transfer.id} - Amount:  $ #{transfer.amount}"
+              puts "Transaction ID #{transfer.id} - Amount:  $ #{transfer.amount} - #{transfer.account.user.name}"
             end
           elsif user_input == "My Transactions"
             user.owned_transfers.map do |transfer|
@@ -51,8 +51,8 @@ def menu(user)
           display_stats(user)
         
           choices = user.transfers.map do |transaction|
-            account = Account.find(transaction.account_id)
-            reciever = User.find(account.user_id)
+            reciever_account = Account.find(transaction.account_id)
+            reciever = User.find(reciever_account.user_id)
             "#{reciever.name} - $ #{transaction.amount} - #{transaction.id}"
           end
 
@@ -110,8 +110,11 @@ def deposit(user)
         puts "Creating Transaction..."
         tr = Transfer.create(user_id: receiver.id, account_id:  receiver.account.id, amount: amount)
         tr.deposit
+        tr2 = Transfer.create(user_id: user.id, account_id: user.account.id, amount: amount)
+        tr2.withdraw
       end
     end
+
 end
 
 
