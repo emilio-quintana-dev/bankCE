@@ -1,6 +1,6 @@
 def display_stats(user)
   user.account.reload
-  puts "🧍‍♂️  #{user.name}  |  💰  #{user.account.balance}  \n\n"
+  puts "🧍‍♂️  #{user.name}  |  💰 $#{user.account.balance}  \n\n"
 end
 
 def clear_and_reload(user)
@@ -13,7 +13,7 @@ def menu(user)
   clear_and_reload(user)
   display_stats(user)
 
-  choices = %w(Deposit Withdraw Cancel Balance Quit) # History is temporarily removed
+  choices = %w(Deposit Withdraw Reverse\ Transaction Balance Quit) 
   action = $prompt.select("What would you like to do?", choices)
     
     while(action != "Quit") do
@@ -30,61 +30,64 @@ def menu(user)
         when "Withdraw"
           clear_and_reload(user)
           display_stats(user)
-          amount = $prompt.ask("How much would you like to withdraw?")
-          # USER.ID => USER SENDING THE MONEY
-          # ACCOUNT.ID => ACCOUNT OF USER RECIEVING THE MONEY
-          tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
-          tr.withdraw
 
-        # when "History"
-        #   puts `clear`
-        #   display_stats(user)
-        #   reload(user)
+          choice = $prompt.select("Do you want to withdraw?", %w(Yes No))
+          if choice == "Yes"
+            amount = $prompt.ask("How much would you like to withdraw?")
+            # USER.ID => USER SENDING THE MONEY
+            # ACCOUNT.ID => ACCOUNT OF USER RECIEVING THE MONEY
+            tr = Transfer.create(user_id: user.id, account_id:  user.account.id, amount: amount)
+            tr.withdraw
+            clear_and_reload(user)
+            display_stats(user)
+          else
+            clear_and_reload(user)
+            display_stats(user)
+          end
 
-        #   choices = %w(All\ Transactions My\ Transactions)
-        #   user_input = $prompt.select("Which transactions would you like to view?", choices)
-
-        #   if user_input == "All Transactions"
-        #     user.transfers.map do |transfer|
-        #       puts "Transaction ID #{transfer.id} - Amount:  $ #{transfer.amount} - #{transfer.account.user.name}"
-        #     end
-        #   elsif user_input == "My Transactions"
-        #     user.owned_transfers.map do |transfer|
-        #       puts "Transaction ID #{transfer.id} - Amount:  $ #{transfer.amount}"
-        #     end
-        #   end
-
-        # CANCEL
+        # REVERSE TRANSACTION
         # USER CAN SELECT A TRANSACTION HE
         # WOULD LIKE TO REVERSE/CANCEL
-        when "Cancel"
+        when "Reverse Transaction"
           clear_and_reload(user)
           display_stats(user)
           
-          # LOOP THROUGH ALL TRANSACTIONS THAT
-          # INCLUDE THIS USER'S ID
-          choices = user.transfers.map do |transaction|
-            # SAVE THE RECIEVER'S ACCOUNT INSTANCE
-            reciever_account = Account.find(transaction.account_id)
-            # SAVE THE RECIEVER'S USER INSTANCE
-            reciever = User.find(reciever_account.user_id)
-            # PRINT OUT ALL TRANSACTIONS
-            "#{reciever.name} - $ #{transaction.amount} - #{transaction.id}"
+         
+          choice = $prompt.select("Do you want to reverse a transaction?", %w(Yes No))
+          if choice == "Yes"
+            # LOOP THROUGH ALL TRANSACTIONS THAT
+            # INCLUDE THIS USER'S ID
+            choices = user.transfers.map do |transaction|
+              
+              if transaction.user_id == user.id && transaction.account.id != user.account.id
+                # SAVE THE RECIEVER'S ACCOUNT INSTANCE
+                reciever_account = Account.find(transaction.account_id)
+                # SAVE THE RECIEVER'S USER INSTANCE
+                reciever = User.find(reciever_account.user_id)
+                # PRINT OUT ALL TRANSACTIONS
+                "#{reciever.name} - $ #{transaction.amount}"
+                
+              end
+            end
+
+            # USER SELECTS WHICH TRANSACTION HE WANTS TO CANCEL
+            user_input = $prompt.select("Which transactions would you like to reverse?", choices)
+            # GET THAT TRANSACTION'S ID
+            transaction_id = user_input.split()[-1].to_i
+            # FIND THAT TRANSACTION
+            transfer = Transfer.find(transaction_id)
+            # REVERSE IT
+            transfer.reverse_transfer
+            # CLEAR AND RELOAD
+            clear_and_reload(user)
+            display_stats(user)
+            puts "Transaction Deleted and Reversed Successfully."
+
+          else
+            clear_and_reload(user)
+            display_stats(user)
           end
-
-          # USER SELECTS WHICH TRANSACTION HE WANTS TO CANCEL
-          user_input = $prompt.select("Which transactions would you like to cancel?", choices)
-          # GET THAT TRANSACTION'S ID
-          transaction_id = user_input.split()[-1].to_i
-          # FIND THAT TRANSACTION
-          transfer = Transfer.find(transaction_id)
-          # REVERSE IT
-          transfer.reverse_transfer
-          # CLEAR AND RELOAD
-          clear_and_reload(user)
-          display_stats(user)
-          puts "Transaction Deleted and Reversed Successfully."
-
+          
         when "Balance"
           clear_and_reload(user)
           display_stats(user)
@@ -93,7 +96,7 @@ def menu(user)
           puts "Incorrect input! Please try again."
       end
 
-      action = $prompt.select("What would you like to do?", %w(Deposit Withdraw Cancel Balance Quit)) # # History is temporarily removed
+      action = $prompt.select("What would you like to do?", %w(Deposit Withdraw Reverse\ Transaction Balance Quit)) # # History is temporarily removed
       
     end
 end
@@ -104,7 +107,7 @@ def deposit(user)
   # OR ANY OTHER REGISTERED ACCOUNT
   clear_and_reload(user)
   display_stats(user)
-  choices = %w(My\ Account Different\ Account) 
+  choices = %w(My\ Account Different\ Account Go\ back) 
   choice = $prompt.select("Where would you like to deposit?", choices)
     
   if choice == "My Account"
@@ -157,6 +160,9 @@ def deposit(user)
         
         puts "Deposit completed!"
       end
+    else
+      clear_and_reload(user)
+      display_stats(user)
     end
 end
 

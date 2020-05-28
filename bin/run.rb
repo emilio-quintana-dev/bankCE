@@ -9,7 +9,7 @@ name = $prompt.ask("Please enter your name:")
 
 if User.find_by(name: name)
   user = User.find_by(name: name)
-  pwd = $prompt.mask("Please enter your password.")
+  pwd = $prompt.mask("Please enter your password:")
   menu(user)
 else
   puts `clear`
@@ -18,7 +18,7 @@ else
   if answer == "Yes"
     user = User.create(name: name)
     acct = Account.create(balance: 0, user_id: user.id)
-    pwd = $prompt.mask("Please enter a password.")
+    pwd = $prompt.mask("Please enter a password:")
     menu(user)
   else
     puts "Bye bye!"
