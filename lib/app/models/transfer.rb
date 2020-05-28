@@ -3,41 +3,44 @@ class Transfer < ActiveRecord::Base
   belongs_to :account
   
   def deposit
-    puts "Depositing..."
     new_balance = account.balance + self.amount
     account.update(:balance => new_balance)
-    puts "The new balance is #{user.account.balance}"
   end
 
   def withdraw
-    puts "Withdrawing..."
+    # CALCULATES POSSIBLE NEW BALANCE TO CHECK FOR
+    # NEGATIVES
     new_balance = account.balance - self.amount
-
+    # IF THE POSSIBLE BALANCE IS LESS THAN ZERO
+    # THEN RAISE AN ERROR
     if new_balance < 0
-      puts "Error! Amount can't be greater than balance."
+      puts "Error! You can't withdraw more than your current balance."
     else
+      # WITHDRAWS MONEY FROM THE USER'S BALANCE
       account.update(:balance => new_balance)
-      puts "The new balance is #{user.account.balance}"
     end
   end
 
   def reverse_transfer
 
-    # Get the account where the deposit was made
-    account_id = self.account_id
-    reciever_account = Account.find(account_id)
+    # GET THE RECIEVER'S ACCOUNT
+    reciever_account = Account.find(self.account_id)
 
-    # Get the account of the user that made the deposit
+    # GET THE SENDER'S ACCOUNT
     user_account = self.user.account
 
-    # Reverse Transactions
+    # START REVERSAL
     puts "Reversing Transaction..."
-    reciever_balance = reciever_account.balance - self.amount
-    reciever_account.update(:balance => reciever_balance)
+
+    # WITHDRAW FROM RECIEVER'S BALANCE
+    recievers_new_balance = reciever_account.balance - self.amount
+    reciever_account.update(:balance => recievers_new_balance)
     
-    sender_balance = user_account.balance + self.amount
-    user_account.update(:balance => sender_balance)
+    # DEPOSIT INTO SENDER'S BALANCE
+    senders_new_balance = user_account.balance + self.amount
+    user_account.update(:balance => senders_new_balance)
     
+    # DELETE TRANSACTION FROM TABLE
     self.delete
   end
 
