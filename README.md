@@ -22,15 +22,16 @@ User >—— Transaction ——< Account <br/>
 
 - User can create a new user with a new account
 - User can create a new transaction (deposit/withdraw)
+- User can send money to other users/accounts
 
 ### READ:
 
 - User can get his balance
-- User can check transactions based on day
-- User can check transactions based on amount
+- User can view all transactions
+- User can view own transactions
 
 ### DELETE:
 
-- User can cancel a transaction
+- User can cancel/delete a transaction
 
 ## Made by: Claud Sarb, Emilio Quintana
