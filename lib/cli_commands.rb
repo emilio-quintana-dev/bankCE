@@ -1,7 +1,9 @@
+$current_emoji = "🧍‍♂️"
+$emoji_collection = ["🧍‍♂️", "💀", "👽", "🤖", "👩‍🦳", "💩"]
 
 def display_stats(user)
   user.account.reload
-  puts "🧍‍♂️  #{user.name}  |  💰 $#{user.account.balance} | 🕰  #{time.strftime("%I:%M %P")} \n\n"
+  puts "#{$current_emoji} #{user.name}  |  💰 $#{user.account.balance} | 🕰  #{time.strftime("%I:%M %P")} \n\n"
 end
 
 def time
@@ -18,7 +20,7 @@ def menu(user)
   clear_and_reload(user)
   display_stats(user)
 
-  choices = %w(Deposit Withdraw Reverse\ Transaction History Balance Quit) 
+  choices = %w(Deposit Withdraw Reverse\ Transaction History Balance Change\ Emoji Quit) 
   action = $prompt.select("What would you like to do?", choices)
     
     while(action != "Quit") do
@@ -49,20 +51,32 @@ def menu(user)
             clear_and_reload(user)
             display_stats(user)
           end
-        
+
+        # HISTORY
+        # USER CAN LOOK AT THE TRANSACTION HISTORY
+        # FOR BOTH HIS OWN PERSONAL TRANSACTIONS
+        # AND ALL TRANSACTIONS INVOLVING THE USER'S ID OR ACCOUNT ID
         when "History"
+          # CLEAR AND RELOAD
           clear_and_reload(user)
           display_stats(user)
 
+          # GET THE USER'S CHOICE
           choices = %w(All\ Transactions My\ Transactions)
           user_input = $prompt.select("Which transactions would you like to view?", choices)
 
+          # IF THE USER WANTS TO SEE ALL TRANSACTIONS
           if user_input == "All Transactions"
+            # MAP ALL TRANSACTIONS FROM THAT USER
             user.transfers.map do |transfer|
+              # PRINT THEM OUT
               puts "Transaction ID #{transfer.id} - Amount:  $ #{transfer.amount} - #{transfer.account.user.name}"
             end
 
+          # IF THE USER WANT TO SEE ONLY HIS/HER PERSONAL TRANSACTIONS
           elsif user_input == "My Transactions"
+            # SELECT ONLY THE TRANSACTIONS WHERE THE USER INITIALIZED THE
+            # TRANSACTION BUT DIDN'T DO IT TO HIS/HER ACCOUNT
             user.transfers.select do |transfer|
               if transfer.user_id == user.id && transfer.account_id != user.account.id
                 puts "Amount:  $ #{transfer.amount} Destination: #{transfer.account.user.name}"
@@ -112,16 +126,31 @@ def menu(user)
             clear_and_reload(user)
             display_stats(user)
           end
-          
+
+        # BALANCE
+        # USER CAN READ HIS CURRENT BALANCE
         when "Balance"
+          # CLEAR AND RELOAD
           clear_and_reload(user)
           display_stats(user)
+
           puts "Your current balance is $#{user.account.balance}"
+        
+        # CHANGE EMOJI
+        # USER CAN CHANGE HIS/HER EMOJI
+        when "Change Emoji"
+          choices = $emoji_collection
+          choice = $prompt.select("Choose the emoji you like!", choices)
+          $current_emoji = choice
+
+          # CLEAR AND RELOAD
+          clear_and_reload(user)
+          display_stats(user)
         else
           puts "Incorrect input! Please try again."
       end
 
-      action = $prompt.select("What would you like to do?", %w(Deposit Withdraw Reverse\ Transaction  History Balance Quit)) # # History is temporarily removed
+      action = $prompt.select("What would you like to do?", %w(Deposit Withdraw Reverse\ Transaction  History Balance Change\ Emoji Quit)) 
       
     end
 end
