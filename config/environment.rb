@@ -1,6 +1,7 @@
 require 'bundler'
 require 'tty-prompt'
 require 'tty-table'
+require 'colorize'
 Bundler.require
 ActiveRecord::Base.logger = nil
 

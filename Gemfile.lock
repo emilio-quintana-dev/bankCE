@@ -14,6 +14,7 @@ GEM
       tzinfo (~> 1.1)
     arel (7.1.4)
     coderay (1.1.1)
+    colorize (0.8.1)
     concurrent-ruby (1.0.5)
     equatable (0.6.1)
     i18n (0.8.1)
@@ -73,8 +74,6 @@ GEM
       tty-screen (~> 0.7)
       wisper (~> 2.0.0)
     tty-screen (0.7.1)
-    tty-spinner (0.9.3)
-      tty-cursor (~> 0.7)
     tty-table (0.11.0)
       equatable (~> 0.6)
       necromancer (~> 0.5)
@@ -91,6 +90,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  colorize
   pry
   require_all
   sinatra-activerecord
@@ -98,7 +98,6 @@ DEPENDENCIES
   tty-box
   tty-markdown
   tty-prompt
-  tty-spinner
   tty-table
 
 BUNDLED WITH

@@ -3,7 +3,8 @@ require_relative '../config/environment'
 $prompt = TTY::Prompt.new
 
 puts `clear`
-puts "Welcome to BankCE 🏦"
+puts "Welcome to BankCE 🏦".colorize(:green)
+puts self.logo
 puts
 name = $prompt.ask("Please enter your name:")
 

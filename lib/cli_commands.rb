@@ -1,7 +1,11 @@
 
 def display_stats(user)
   user.account.reload
-  puts "🧍‍♂️  #{user.name}  |  💰 $#{user.account.balance}  \n\n"
+  puts "🧍‍♂️  #{user.name}  |  💰 $#{user.account.balance} | 🕰  #{time.strftime("%I:%M %P")} \n\n"
+end
+
+def time
+  time = Time.new
 end
 
 def clear_and_reload(user)
@@ -186,5 +190,3 @@ def deposit(user)
       display_stats(user)
     end
 end
-
-
